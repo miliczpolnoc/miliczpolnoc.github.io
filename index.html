@@ -2,51 +2,94 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Milicz-Północ</title>
     <style>
-        body {
+        /* Styl ogólny - identyczny jak w porzadkowi.html */
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
             background-color: #121212;
-            color: #e0e0e0;
-            font-family: sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            overflow: hidden;
         }
+
+        /* Kontener centrujący (odpowiednik #login-overlay) */
+        .main-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+            flex-direction: column;
+        }
+
+        /* Pudełko menu (odpowiednik .login-box) */
+        .menu-box {
+            background: #1e1e1e; 
+            padding: 30px 25px; 
+            border-radius: 16px;
+            border: 1px solid #333; 
+            width: 85%; max-width: 320px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 223, 196, 0.15);
+        }
+
+        /* Nagłówek */
         h1 {
-            color: #03dac6;
-            margin-bottom: 2rem;
+            color: #00dfc4; 
+            margin: 0 0 10px 0; 
+            text-transform: uppercase; 
+            font-size: 1.4rem;
         }
-        .links {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
+
+        p {
+            color: #aaa; 
+            font-size: 0.9rem; 
+            margin-bottom: 25px;
         }
-        a {
-            color: #bb86fc;
-            text-decoration: none;
-            font-size: 1.2rem;
-            padding: 10px 20px;
-            border: 1px solid #333;
+        
+        /* Linki wyglądające jak przyciski */
+        a.btn-link {
+            display: block;
+            width: 100%; 
+            padding: 14px; 
+            margin-bottom: 15px; 
             border-radius: 8px;
-            transition: background 0.3s;
+            background: #00dfc4; 
+            color: #000; 
+            font-weight: bold; 
+            font-size: 16px;
+            text-decoration: none; /* Usunięcie podkreślenia */
+            box-sizing: border-box;
+            transition: 0.2s;
+            border: none;
         }
-        a:hover {
-            background-color: #1f1f1f;
-            border-color: #03dac6;
+
+        /* Efekt kliknięcia */
+        a.btn-link:active { 
+            opacity: 0.8; 
+            transform: scale(0.98); 
         }
+        
+        /* Ostatni przycisk bez marginesu dolnego */
+        a.btn-link:last-child {
+            margin-bottom: 0;
+        }
+
     </style>
 </head>
 <body>
 
-    <h1>Milicz-Północ</h1>
+    <div class="main-container">
+        <div class="menu-box">
+            <h1>Milicz-Północ</h1>
+            <p>Wybierz grafik:</p>
 
-    <div class="links">
-        <a href="https://miliczpolnoc.github.io/wozki.html">Grafik Wózki</a>
-        <a href="https://miliczpolnoc.github.io/porzadkowi.html">Grafik Porządkowi</a>
+            <a href="https://miliczpolnoc.github.io/wozki.html" class="btn-link">
+                GRAFIK WÓZKI
+            </a>
+
+            <a href="https://miliczpolnoc.github.io/porzadkowi.html" class="btn-link">
+                GRAFIK PORZĄDKOWI
+            </a>
+        </div>
     </div>
 
 </body>
