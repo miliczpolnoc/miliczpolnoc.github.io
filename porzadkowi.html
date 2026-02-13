@@ -2,45 +2,38 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ładowanie Grafiku...</title>
-    
-    <meta http-equiv="refresh" content="0; url=https://script.google.com/macros/s/AKfycbxIYbL5k8w-zacfYUVUIwf0XvTZHsAyp7ot9DTgKKcEu-eof0KoK6pcAkRfGObbV6kGUw/exec">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Grafik Porządkowi - Milicz Północ</title>
     <style>
-        body {
-            background-color: #121212;
-            color: #00dfc4;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
+        /* Reset stylów, aby ramka zajęła 100% ekranu bez pasków przewijania */
+        body, html {
             margin: 0;
-            font-family: sans-serif;
-            text-align: center;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Ukrywa paski przewijania samej strony */
+            background-color: #000; /* Czarne tło podczas ładowania */
         }
-        .loader {
-            border: 4px solid #333;
-            border-top: 4px solid #00dfc4;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        p { font-size: 14px; color: #888; margin-top: 10px; }
-    </style>
 
-    <script>
-        // Zapasowe przekierowanie w JavaScript (dla pewności)
-        window.location.href = "https://script.google.com/macros/s/AKfycbxIYbL5k8w-zacfYUVUIwf0XvTZHsAyp7ot9DTgKKcEu-eof0KoK6pcAkRfGObbV6kGUw/exec";
-    </script>
+        iframe {
+            display: block;
+            width: 100%;
+            height: 100%;
+            border: none; /* Brak obramowania */
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+    </style>
 </head>
 <body>
-    <div class="loader"></div>
-    <div>Uruchamianie aplikacji<br><strong>MILICZ-PÓŁNOC</strong></div>
-    <p>Czekaj...</p>
+
+    <iframe 
+        src="https://script.google.com/macros/s/AKfycbxIYbL5k8w-zacfYUVUIwf0XvTZHsAyp7ot9DTgKKcEu-eof0KoK6pcAkRfGObbV6kGUw/exec"
+        allow="fullscreen">
+    </iframe>
+
 </body>
 </html>
