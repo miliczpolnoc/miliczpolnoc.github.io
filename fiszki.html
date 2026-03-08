@@ -3,14 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fiszki: Walka z negatywnymi uczuciami</title>
+    <title>Fiszki: Walka z negatywnymi uczuciami (Dark Mode)</title>
     <style>
         :root {
-            --primary-color: #4A90E2;
-            --accent-color: #E27D60;
-            --background-color: #F5F7FA;
-            --card-bg: #FFFFFF;
-            --text-color: #333333;
+            /* Paleta Dark Mode */
+            --primary-color: #64B5F6; /* Jaśniejszy niebieski dla dobrego kontrastu */
+            --accent-color: #FF8A65; /* Łagodny pomarańczowy */
+            --background-color: #121212; /* Ciemne tło strony */
+            --card-bg: #1E1E1E; /* Tło karty - nieco jaśniejsze niż tło strony */
+            --text-color: #E0E0E0; /* Jasnoszary tekst, nie czysto biały, by nie męczył oczu */
+            --button-hover: #42A5F5;
+            --button-disabled: #333333;
+            --button-disabled-text: #666666;
         }
 
         body {
@@ -23,6 +27,7 @@
             min-height: 100vh;
             margin: 0;
             padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         h1 {
@@ -59,7 +64,7 @@
             height: 100%;
             backface-visibility: hidden;
             border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5); /* Ciemniejszy i mocniejszy cień dla głębi */
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -117,22 +122,23 @@
 
         button {
             background-color: var(--primary-color);
-            color: white;
+            color: #121212; /* Ciemny tekst na jasnym przycisku */
             border: none;
             padding: 12px 24px;
             border-radius: 8px;
             font-size: 1.1rem;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, color 0.3s;
             font-weight: bold;
         }
 
         button:hover {
-            background-color: #357ABD;
+            background-color: var(--button-hover);
         }
 
         button:disabled {
-            background-color: #A0C4E8;
+            background-color: var(--button-disabled);
+            color: var(--button-disabled-text);
             cursor: not-allowed;
         }
 
@@ -140,7 +146,23 @@
             margin-top: 15px;
             font-size: 1.2rem;
             font-weight: bold;
-            color: #666;
+            color: #AAAAAA; /* Zmiana na jaśniejszy szary */
+        }
+
+        /* Stylizacja paska przewijania dla tekstu na odwrocie */
+        .flashcard-back::-webkit-scrollbar {
+            width: 8px;
+        }
+        .flashcard-back::-webkit-scrollbar-track {
+            background: var(--card-bg); 
+            border-radius: 4px;
+        }
+        .flashcard-back::-webkit-scrollbar-thumb {
+            background: #555; 
+            border-radius: 4px;
+        }
+        .flashcard-back::-webkit-scrollbar-thumb:hover {
+            background: #777; 
         }
     </style>
 </head>
@@ -177,7 +199,7 @@
             {
                 type: "Akapit 4, 5",
                 question: "Jak przeszłość wpływała na emocje Pawła?",
-                answer: "Zanim Paweł został chrześcijaninem, zrobił wiele złych rzeczy, których później żałował[cite: 24]. Dawne czyny nieraz wzbudzały w nim poczucie winy, a im dłużej był chrześcijaninem, tym bardziej mogło gryźć go sumienie[cite: 26, 27]."
+                answer: "Zanim Paweł został chrześcijaninem, zrobił wiele złych rzeczy, których później żałował[cite: 24]. Dawne czyny nieraz wzbudzały w nim poczucie winy [cite: 26], a im dłużej był chrześcijaninem, tym bardziej mogło gryźć go sumienie[cite: 27]."
             },
             {
                 type: "Akapit 6",
@@ -187,7 +209,7 @@
             {
                 type: "Akapit 7",
                 question: "Dlaczego Pawłowi było trudno robić to, co słuszne?",
-                answer: "Paweł walczył ze swoimi słabościami[cite: 36]. Niedoskonałe ciało osłabiało jego postanowienie robienia tego, co słuszne, a grzeszne skłonności cały czas dawały o sobie znać[cite: 37, 38]."
+                answer: "Paweł walczył ze swoimi słabościami[cite: 36]. Niedoskonałe ciało osłabiało jego postanowienie robienia tego, co słuszne [cite: 37], a grzeszne skłonności cały czas dawały o sobie znać[cite: 38]."
             },
             {
                 type: "Akapit 8",
@@ -197,7 +219,7 @@
             {
                 type: "Akapit 9, 10",
                 question: "Co było dla Pawła źródłem radości i pomagało mu walczyć z negatywnymi uczuciami?",
-                answer: "Cieszył się z dobrych wiadomości z odległych zborów i z przyjaciół[cite: 47, 48]. Pomagała mu też wiara w to, że okup został złożony również za niego, dzięki czemu był pewny, że Jehowa mu przebacza[cite: 52, 53]."
+                answer: "Cieszył się z dobrych wiadomości z odległych zborów [cite: 47] i z przyjaciół[cite: 48]. Pomagała mu też wiara w to, że okup został złożony również za niego [cite: 52], dzięki czemu był pewny, że Jehowa mu przebacza[cite: 53]."
             },
             {
                 type: "Akapit 12",
@@ -207,7 +229,7 @@
             {
                 type: "Akapit 16",
                 question: "Jak modlitwa może nam pomóc w rozpoznaniu przyczyn naszych negatywnych uczuć?",
-                answer: "Możemy z modlitwą przemyśleć, co wywołuje w nas negatywne uczucia[cite: 80]. Tak jak król Dawid, możemy prosić Jehowę, żeby pomógł nam zrozumieć, skąd się biorą nasze negatywne myśli i jak je pokonać[cite: 81, 82]."
+                answer: "Możemy z modlitwą przemyśleć, co wywołuje w nas negatywne uczucia[cite: 80]. Tak jak król Dawid, możemy prosić Jehowę, żeby pomógł nam zrozumieć, skąd się biorą nasze negatywne myśli i jak je pokonać[cite: 82]."
             },
             {
                 type: "Akapit 17, 18",
@@ -217,16 +239,16 @@
             {
                 type: "Akapit 19, 20",
                 question: "Jakie powinno być nasze nastawienie do przyszłości, nawet jeśli negatywne uczucia czasem wracają?",
-                answer: "Nadal mogą zdarzać się dni, kiedy będziemy przygnębieni, jednak z pomocą Jehowy jesteśmy w stanie radzić sobie z negatywnymi uczuciami[cite: 97]. Z Jego pomocą możemy trzymać je pod kontrolą i wyczekiwać czasu, gdy już zawsze będziemy myśleć pozytywnie[cite: 100]."
+                answer: "Nadal mogą zdarzać się dni, kiedy będziemy przygnębieni [cite: 97], jednak z pomocą Jehowy jesteśmy w stanie radzić sobie z negatywnymi uczuciami[cite: 97]. Z Jego pomocą możemy trzymać je pod kontrolą [cite: 100] i wyczekiwać czasu, gdy już zawsze będziemy myśleć pozytywnie[cite: 100]."
             },
 
-            // FISZKI PODSUMOWUJĄCE (Główne pytania z końca artykułu)
+            // FISZKI PODSUMOWUJĄCE
             {
                 type: "Podsumowanie",
                 question: "Dlaczego Paweł nieraz czuł się przygnębiony?",
                 answer: `
                     <ul>
-                        <li>Z powodu błędów popełnionych w przeszłości[cite: 23, 24].</li>
+                        <li>Z powodu błędów popełnionych w przeszłości[cite: 23].</li>
                         <li>Z powodu ‛ciernia w ciele' — trudnego do zniesienia problemu fizycznego lub emocjonalnego[cite: 32, 33, 34].</li>
                         <li>Z powodu słabości i grzesznych skłonności, z którymi musiał walczyć[cite: 35, 36, 38].</li>
                     </ul>
@@ -271,7 +293,6 @@
                 const cardData = cardsData[currentCardIndex];
                 const isSummary = cardData.type === "Podsumowanie";
                 
-                // Ustawienie odpowiednich stylów dla podsumowania
                 if(isSummary) {
                     frontElement.classList.add('summary-card');
                     backElement.classList.add('summary-card');
@@ -307,7 +328,6 @@
             }
         }
 
-        // Obsługa strzałek na klawiaturze dla wygody użytkownika
         document.addEventListener('keydown', function(event) {
             if(event.key === 'ArrowRight' || event.key === ' ') {
                 if(!flashcardElement.classList.contains('is-flipped') && event.key === ' ') {
@@ -315,6 +335,7 @@
                 } else if(currentCardIndex < cardsData.length - 1) {
                     nextCard();
                 }
+                if(event.key === ' ') event.preventDefault(); // Blokuje przewijanie strony spacją
             } else if(event.key === 'ArrowLeft') {
                 prevCard();
             } else if(event.key === 'Enter') {
