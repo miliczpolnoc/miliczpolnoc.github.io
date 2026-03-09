@@ -17,7 +17,6 @@
             --hint-color: #888888;
         }
 
-        /* Twarde tło, aby nie było białego mignięcia */
         html {
             background-color: var(--background-color);
         }
@@ -32,17 +31,16 @@
             margin: 0;
             padding: 20px;
             transition: background-color 0.3s;
-            position: relative; /* Wymagane dla płótna tła */
+            position: relative;
         }
 
-        /* Nowe: Stylizacja płótna cząsteczek tła */
         #particles-canvas {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1; /* Umieść za wszystkim innym */
+            z-index: -1;
         }
 
         h1 {
@@ -50,7 +48,7 @@
             color: var(--primary-color);
             margin-bottom: 30px;
             max-width: 800px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5); /* Lepsza czytelność */
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
 
         .flashcard-container {
@@ -59,7 +57,7 @@
             max-width: 700px;
             height: 450px;
             margin-bottom: 20px;
-            z-index: 1; /* Powyżej tła */
+            z-index: 1;
         }
 
         .flashcard {
@@ -106,7 +104,6 @@
             transform: rotateY(180deg);
         }
 
-        /* Nowe: Stylizacja błysku po odkryciu */
         .flashcard.reveal-flash .flashcard-face {
             animation: card-flash 0.5s ease-out;
         }
@@ -139,6 +136,12 @@
             overflow-y: auto;
             font-size: 1.4rem; 
             line-height: 1.5;
+        }
+
+        /* ZMIANY: Wyjątek dla długich list na kartach podsumowujących */
+        .flashcard-face.summary-card.flashcard-back .card-content {
+            font-size: 1.15rem; /* Mniejszy tekst dla podsumowań */
+            justify-content: flex-start; /* Zaczyna od góry, likwiduje problem ucinania */
         }
 
         .flashcard-back ul {
@@ -178,7 +181,7 @@
             display: flex;
             gap: 15px;
             margin-top: 20px;
-            z-index: 1; /* Powyżej tła */
+            z-index: 1;
         }
 
         button {
@@ -216,7 +219,7 @@
             font-size: 1.2rem;
             font-weight: bold;
             color: #AAAAAA;
-            z-index: 1; /* Powyżej tła */
+            z-index: 1;
         }
 
         .source-link {
@@ -224,7 +227,7 @@
             font-size: 0.9rem;
             color: var(--hint-color);
             text-align: center;
-            z-index: 1; /* Powyżej tła */
+            z-index: 1;
         }
 
         .source-link a {
@@ -283,13 +286,12 @@
     </div>
 
     <script>
-        // --- Nowe: Moduł cząsteczek tła ---
         const ParticlesSystem = (function() {
             const canvas = document.getElementById('particles-canvas');
             const ctx = canvas.getContext('2d');
             let particlesArray = [];
             const numberOfParticles = 80;
-            const particleColor = 'rgba(100, 181, 246, 0.15)'; // primary-color z małą opornością
+            const particleColor = 'rgba(100, 181, 246, 0.15)'; 
 
             class Particle {
                 constructor() {
@@ -303,7 +305,6 @@
                     this.x += this.speedX;
                     this.y += this.speedY;
 
-                    // Odbijanie od krawędzi
                     if (this.x > canvas.width || this.x < 0) {
                         this.speedX = -this.speedX;
                     }
@@ -351,10 +352,7 @@
             };
         })();
 
-        // Uruchomienie tła cząsteczek
         ParticlesSystem.start();
-        // --- Koniec modułu cząsteczek ---
-
 
         var cardsData = [
             {
@@ -433,12 +431,9 @@
         var nextBtn = document.getElementById('next-btn');
         
         var flipHintHTML = '<div class="flip-hint">Kliknij, aby odwrócić ↺</div>';
-
-        // --- Nowe: Globalna flaga dla efektu błysku ---
         var flashTimeout = null;
 
         function updateCard() {
-            // Usuń efekt błysku przed zmianą treści
             flashcardElement.classList.remove('reveal-flash');
             if(flashTimeout) clearTimeout(flashTimeout);
 
@@ -472,24 +467,19 @@
             }, 150); 
         }
 
-        // --- Zmiana: flipCard teraz uruchamia efekt po odkryciu ---
         function flipCard() {
-            // Usuń efekt błysku, jeśli jest, aby móc go uruchomić ponownie
             flashcardElement.classList.remove('reveal-flash');
             if(flashTimeout) clearTimeout(flashTimeout);
 
             flashcardElement.classList.toggle('is-flipped');
 
-            // Jeśli karta jest teraz odkrywana (odsłaniana odpowiedź)...
             if(flashcardElement.classList.contains('is-flipped')) {
-                // ...uruchom efekt błysku zaraz po zakończeniu animacji obrotu
                 flashTimeout = setTimeout(function() {
                     flashcardElement.classList.add('reveal-flash');
-                    // Usuń klasę po zakończeniu animacji (0.5s), aby zresetować stan
                     setTimeout(function() {
                          flashcardElement.classList.remove('reveal-flash');
                     }, 500);
-                }, 600); // 600ms = czas animacji obrotu w CSS
+                }, 600); 
             }
         }
 
