@@ -67,7 +67,7 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
             display: flex;
             flex-direction: column;
-            justify-content: space-between; /* Rozsuwa elementy: tag góra, treść środek, hint dół */
+            justify-content: space-between;
             padding: 30px;
             box-sizing: border-box;
             background-color: var(--card-bg);
@@ -218,7 +218,7 @@
     </div>
     
     <div class="progress" id="progress">
-        Karta 1 z X
+        Wczytywanie...
     </div>
 
     <div class="source-link">
@@ -226,7 +226,7 @@
     </div>
 
     <script>
-        const cardsData = [
+        var cardsData = [
             {
                 type: "Akapit 1, 2",
                 question: "Z jakimi uczuciami i z jaką walką zmagał się apostoł Paweł?",
@@ -280,54 +280,36 @@
             {
                 type: "Podsumowanie",
                 question: "Dlaczego Paweł nieraz czuł się przygnębiony?",
-                answer: `
-                    <ul>
-                        <li>Z powodu błędów popełnionych w przeszłości.</li>
-                        <li>Z powodu ‛ciernia w ciele' — trudnego do zniesienia problemu fizycznego lub emocjonalnego.</li>
-                        <li>Z powodu słabości i grzesznych skłonności, z którymi musiał walczyć.</li>
-                    </ul>
-                `
+                answer: "<ul><li>Z powodu błędów popełnionych w przeszłości.</li><li>Z powodu ‛ciernia w ciele' — trudnego do zniesienia problemu fizycznego lub emocjonalnego.</li><li>Z powodu słabości i grzesznych skłonności, z którymi musiał walczyć.</li></ul>"
             },
             {
                 type: "Podsumowanie",
                 question: "Dzięki czemu mimo negatywnych uczuć Paweł zachowywał pozytywne nastawienie?",
-                answer: `
-                    <ul>
-                        <li>Rozmyślał o działaniu ducha Bożego.</li>
-                        <li>Cieszył się z dobrych wiadomości, przyjaciół i uznania Jehowy.</li>
-                        <li>Pomagała mu wiara w okup i świadomość, że Jehowa przebacza mu na podstawie tej ofiary.</li>
-                    </ul>
-                `
+                answer: "<ul><li>Rozmyślał o działaniu ducha Bożego.</li><li>Cieszył się z dobrych wiadomości, przyjaciół i uznania Jehowy.</li><li>Pomagała mu wiara w okup i świadomość, że Jehowa przebacza mu na podstawie tej ofiary.</li></ul>"
             },
             {
                 type: "Podsumowanie",
                 question: "Co pomoże nam walczyć z negatywnymi uczuciami?",
-                answer: `
-                    <ul>
-                        <li>Dbanie o dobre zwyczaje duchowe (czytanie Słowa Bożego, zebrania, służba).</li>
-                        <li>Modlitwa o to, by zrozumieć skąd się biorą nasze negatywne myśli i jak je pokonać.</li>
-                        <li>Dostosowanie studium osobistego do własnych potrzeb.</li>
-                    </ul>
-                `
+                answer: "<ul><li>Dbanie o dobre zwyczaje duchowe (czytanie Słowa Bożego, zebrania, służba).</li><li>Modlitwa o to, by zrozumieć skąd się biorą nasze negatywne myśli i jak je pokonać.</li><li>Dostosowanie studium osobistego do własnych potrzeb.</li></ul>"
             }
         ];
 
-        let currentCardIndex = 0;
-        const flashcardElement = document.getElementById('flashcard');
-        const frontElement = document.getElementById('card-front');
-        const backElement = document.getElementById('card-back');
-        const progressElement = document.getElementById('progress');
-        const prevBtn = document.getElementById('prev-btn');
-        const nextBtn = document.getElementById('next-btn');
+        var currentCardIndex = 0;
+        var flashcardElement = document.getElementById('flashcard');
+        var frontElement = document.getElementById('card-front');
+        var backElement = document.getElementById('card-back');
+        var progressElement = document.getElementById('progress');
+        var prevBtn = document.getElementById('prev-btn');
+        var nextBtn = document.getElementById('next-btn');
         
-        const flipHintHTML = '<div class="flip-hint">Kliknij, aby odwrócić ↺</div>';
+        var flipHintHTML = '<div class="flip-hint">Kliknij, aby odwrócić ↺</div>';
 
         function updateCard() {
             flashcardElement.classList.remove('is-flipped');
             
-            setTimeout(() => {
-                const cardData = cardsData[currentCardIndex];
-                const isSummary = cardData.type === "Podsumowanie";
+            setTimeout(function() {
+                var cardData = cardsData[currentCardIndex];
+                var isSummary = cardData.type === "Podsumowanie";
                 
                 if(isSummary) {
                     frontElement.classList.add('summary-card');
@@ -337,21 +319,19 @@
                     backElement.classList.remove('summary-card');
                 }
 
-                frontElement.innerHTML = `
-                    <span class="tag">${cardData.type}</span>
-                    <div class="card-content">${cardData.question}</div>
-                    ${flipHintHTML}
-                `;
+                frontElement.innerHTML = 
+                    '<span class="tag">' + cardData.type + '</span>' +
+                    '<div class="card-content">' + cardData.question + '</div>' +
+                    flipHintHTML;
                 
-                backElement.innerHTML = `
-                    <div class="card-content">${cardData.answer}</div>
-                    ${flipHintHTML}
-                `;
+                backElement.innerHTML = 
+                    '<div class="card-content">' + cardData.answer + '</div>' +
+                    flipHintHTML;
                 
-                progressElement.innerText = `Karta ${currentCardIndex + 1} z ${cardsData.length}`;
+                progressElement.innerText = 'Karta ' + (currentCardIndex + 1) + ' z ' + cardsData.length;
                 
                 prevBtn.disabled = currentCardIndex === 0;
-                nextBtn.disabled = currentCardIndex === cardsData.length - 1;
+                nextBtn.disabled = currentCardIndex === (cardsData.length - 1);
             }, 150); 
         }
 
