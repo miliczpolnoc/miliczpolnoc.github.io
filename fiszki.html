@@ -63,6 +63,7 @@
             width: 100%;
             height: 100%;
             backface-visibility: hidden;
+            -webkit-backface-visibility: hidden; /* Poprawka dla Safari/iOS */
             border-radius: 15px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
             display: flex;
@@ -76,6 +77,17 @@
 
         .flashcard-face.summary-card {
             border-top: 6px solid var(--accent-color);
+        }
+
+        /* Wymuszenie warstw - pytanie na wierzchu, odpowiedź pod spodem */
+        .flashcard-front {
+            z-index: 2;
+            transform: rotateY(0deg);
+        }
+
+        .flashcard-back {
+            z-index: 1;
+            transform: rotateY(180deg);
         }
 
         .card-content {
