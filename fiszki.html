@@ -6,7 +6,6 @@
     <title>Fiszki: Walka z negatywnymi uczuciami (Dark Mode)</title>
     <style>
         :root {
-            var(--primary-color): #64B5F6;
             --primary-color: #64B5F6;
             --accent-color: #FF8A65;
             --background-color: #121212;
@@ -15,6 +14,7 @@
             --button-hover: #42A5F5;
             --button-disabled: #333333;
             --button-disabled-text: #666666;
+            --hint-color: #888888;
         }
 
         body {
@@ -67,8 +67,8 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            padding: 40px;
+            justify-content: space-between; /* Rozsuwa elementy: tag góra, treść środek, hint dół */
+            padding: 30px;
             box-sizing: border-box;
             background-color: var(--card-bg);
             border-top: 6px solid var(--primary-color);
@@ -78,20 +78,26 @@
             border-top: 6px solid var(--accent-color);
         }
 
-        .flashcard-front {
+        .card-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .flashcard-front .card-content {
             align-items: center;
             text-align: center;
             font-size: 1.6rem;
             font-weight: bold;
         }
 
-        .flashcard-back {
-            transform: rotateY(180deg);
+        .flashcard-back .card-content {
+            justify-content: flex-start;
             overflow-y: auto;
             font-size: 1.15rem;
             line-height: 1.6;
-            align-items: flex-start;
-            justify-content: flex-start;
         }
 
         .flashcard-back ul {
@@ -108,10 +114,20 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             color: var(--accent-color);
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             display: block;
             width: 100%;
             text-align: center;
+        }
+
+        .flip-hint {
+            font-size: 0.85rem;
+            color: var(--hint-color);
+            text-align: center;
+            margin-top: 15px;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .controls {
@@ -149,18 +165,36 @@
             color: #AAAAAA;
         }
 
-        .flashcard-back::-webkit-scrollbar {
+        .source-link {
+            margin-top: 40px;
+            font-size: 0.9rem;
+            color: var(--hint-color);
+            text-align: center;
+        }
+
+        .source-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .source-link a:hover {
+            color: var(--button-hover);
+            text-decoration: underline;
+        }
+
+        .card-content::-webkit-scrollbar {
             width: 8px;
         }
-        .flashcard-back::-webkit-scrollbar-track {
+        .card-content::-webkit-scrollbar-track {
             background: var(--card-bg); 
             border-radius: 4px;
         }
-        .flashcard-back::-webkit-scrollbar-thumb {
+        .card-content::-webkit-scrollbar-thumb {
             background: #555; 
             border-radius: 4px;
         }
-        .flashcard-back::-webkit-scrollbar-thumb:hover {
+        .card-content::-webkit-scrollbar-thumb:hover {
             background: #777; 
         }
     </style>
@@ -185,6 +219,10 @@
     
     <div class="progress" id="progress">
         Karta 1 z X
+    </div>
+
+    <div class="source-link">
+        Źródło: <a href="https://wol.jw.org/pl/wol/d/r12/lp-p/2026241" target="_blank" rel="noopener noreferrer">jw.org — Strażnica (wydanie do studium) 2026</a>
     </div>
 
     <script>
@@ -281,6 +319,8 @@
         const progressElement = document.getElementById('progress');
         const prevBtn = document.getElementById('prev-btn');
         const nextBtn = document.getElementById('next-btn');
+        
+        const flipHintHTML = '<div class="flip-hint">Kliknij, aby odwrócić ↺</div>';
 
         function updateCard() {
             flashcardElement.classList.remove('is-flipped');
@@ -297,9 +337,17 @@
                     backElement.classList.remove('summary-card');
                 }
 
-                // Tutaj usunięto błędne ukośniki
-                frontElement.innerHTML = `<span class="tag">${cardData.type}</span>${cardData.question}`;
-                backElement.innerHTML = cardData.answer;
+                frontElement.innerHTML = `
+                    <span class="tag">${cardData.type}</span>
+                    <div class="card-content">${cardData.question}</div>
+                    ${flipHintHTML}
+                `;
+                
+                backElement.innerHTML = `
+                    <div class="card-content">${cardData.answer}</div>
+                    ${flipHintHTML}
+                `;
+                
                 progressElement.innerText = `Karta ${currentCardIndex + 1} z ${cardsData.length}`;
                 
                 prevBtn.disabled = currentCardIndex === 0;
