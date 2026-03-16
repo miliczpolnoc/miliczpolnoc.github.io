@@ -3,61 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fiszki: Walka z negatywnymi uczuciami (Dark Mode z efektami)</title>
+    <title>Biblijne Fiszki do Strażnicy - Okup</title>
     <style>
-        :root {
-            --primary-color: #64B5F6;
-            --accent-color: #FF8A65;
-            --background-color: #121212;
-            --card-bg: #1E1E1E;
-            --text-color: #E0E0E0;
-            --button-hover: #42A5F5;
-            --button-disabled: #333333;
-            --button-disabled-text: #666666;
-            --hint-color: #888888;
-        }
-
-        html {
-            background-color: var(--background-color);
+        /* 1. Reset i podstawy */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: var(--text-color);
+            background-color: #121212;
+            color: #E0E0E0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            transition: background-color 0.3s;
-            position: relative;
+            overflow: hidden;
         }
 
+        /* 2. Cząsteczki w tle (Canvas) */
         #particles-canvas {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1;
+            z-index: 0;
+            pointer-events: none;
         }
 
-        h1 {
-            text-align: center;
-            color: var(--primary-color);
-            margin-bottom: 30px;
-            max-width: 800px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        /* 3. Układ główny aplikacji */
+        .app-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 1;
         }
 
+        /* 4. Mechanika kart 3D */
         .flashcard-container {
-            perspective: 1000px;
+            perspective: 1200px; /* Perspektywa nadająca głębię 3D */
             width: 100%;
             max-width: 700px;
-            height: 450px;
-            margin-bottom: 20px;
-            z-index: 1;
+            height: 420px;
+            position: relative;
         }
 
         .flashcard {
@@ -67,193 +60,175 @@
             transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
             transform-style: preserve-3d;
             cursor: pointer;
+            border-radius: 16px;
         }
 
-        .flashcard.is-flipped {
+        .flashcard.flipped {
             transform: rotateY(180deg);
+        }
+
+        /* Efekt rozbłysku aktywowany z JS po zakończeniu obrotu */
+        .flashcard.flash-effect {
+            box-shadow: 0 0 25px 8px #64B5F6;
+            transition: box-shadow 0.15s ease-out;
+        }
+        
+        .flashcard.flash-effect-fade {
+            box-shadow: 0 0 0px 0px transparent;
+            transition: box-shadow 0.5s ease-in;
         }
 
         .flashcard-face {
             position: absolute;
             width: 100%;
             height: 100%;
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            backface-visibility: hidden; /* Ukrywanie pleców karty */
+            background-color: #1E1E1E;
+            border-radius: 16px;
+            padding: 45px 40px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            padding: 30px;
-            box-sizing: border-box;
-            background-color: var(--card-bg);
-            border-top: 6px solid var(--primary-color);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+            border: 1px solid #2A2A2A;
         }
 
-        .flashcard-face.summary-card {
-            border-top: 6px solid var(--accent-color);
-        }
-
+        /* Front: Wyśrodkowany tekst */
         .flashcard-front {
-            z-index: 2;
-            transform: rotateY(0deg);
-        }
-
-        .flashcard-back {
-            z-index: 1;
-            transform: rotateY(180deg);
-        }
-
-        .flashcard.reveal-flash .flashcard-face {
-            animation: card-flash 0.5s ease-out;
-        }
-
-        @keyframes card-flash {
-            0% { box-shadow: 0 10px 25px rgba(0,0,0,0.5), 0 0 0 0 rgba(100, 181, 246, 0.7); }
-            50% { box-shadow: 0 10px 25px rgba(0,0,0,0.5), 0 0 10px 5px rgba(100, 181, 246, 0.7); }
-            100% { box-shadow: 0 10px 25px rgba(0,0,0,0.5), 0 0 0 0 rgba(100, 181, 246, 0.7); }
-        }
-
-        .card-content {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
+            align-items: center;
             justify-content: center;
+            text-align: center;
+        }
+
+        /* Rewers: Wyśrodkowany pionowo i poziomo z powiększoną czcionką */
+        .flashcard-back {
+            transform: rotateY(180deg);
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        /* Wyjątek: Karta podsumowująca (Summary Mode) */
+        .flashcard-back.summary-mode {
+            align-items: flex-start;
+            justify-content: flex-start;
+            text-align: left;
+            overflow-y: auto;
+        }
+
+        /* 5. Typografia i kolory */
+        .tag {
+            background-color: transparent;
+            color: #FF8A65;
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            position: absolute;
+            top: 25px;
+            left: 25px;
+        }
+        
+        .question-text {
+            font-size: 1.8rem;
+            font-weight: 500;
+            color: #64B5F6;
+            line-height: 1.3;
+        }
+
+        .answer-text {
+            font-size: 1.4rem;
+            line-height: 1.6;
+            margin-top: 15px; /* Dystans od górnego tagu */
+        }
+
+        /* Wyjątki dla tekstu na karcie podsumowującej */
+        .summary-mode .answer-text {
+            font-size: 1.15rem;
+            margin-top: 30px; 
             width: 100%;
         }
-
-        .flashcard-front .card-content {
-            align-items: center;
-            text-align: center;
-            font-size: 1.6rem;
-            font-weight: bold;
+        
+        .summary-mode ul {
+            padding-left: 25px;
+            margin-top: 15px;
         }
-
-        .flashcard-back .card-content {
-            justify-content: center; 
-            align-items: center; 
-            text-align: center; 
-            overflow-y: auto;
-            font-size: 1.4rem; 
+        
+        .summary-mode li {
+            margin-bottom: 12px;
             line-height: 1.5;
         }
-
-        /* ZMIANY: Wyjątek dla długich list na kartach podsumowujących */
-        .flashcard-face.summary-card.flashcard-back .card-content {
-            font-size: 1.15rem; /* Mniejszy tekst dla podsumowań */
-            justify-content: flex-start; /* Zaczyna od góry, likwiduje problem ucinania */
+        
+        .summary-mode b {
+            color: #64B5F6;
         }
 
-        .flashcard-back ul {
-            padding-left: 0;
-            margin-top: 15px;
-            list-style-position: inside; 
-            text-align: left; 
-            display: inline-block; 
-        }
-
-        .flashcard-back li {
-            margin-bottom: 15px;
-        }
-
-        .tag {
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--accent-color);
-            margin-bottom: 10px;
-            display: block;
-            width: 100%;
-            text-align: center;
-        }
-
-        .flip-hint {
-            font-size: 0.85rem;
-            color: var(--hint-color);
-            text-align: center;
-            margin-top: 15px;
-            opacity: 0.7;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
+        /* 6. Nawigacja i przyciski */
         .controls {
+            margin-top: 40px;
             display: flex;
-            gap: 15px;
-            margin-top: 20px;
-            z-index: 1;
+            gap: 20px;
+            align-items: center;
         }
 
         button {
-            background-color: var(--primary-color);
-            color: #121212;
-            border: none;
+            background-color: #1E1E1E;
+            color: #E0E0E0;
+            border: 1px solid #333;
             padding: 12px 24px;
+            font-size: 1rem;
             border-radius: 8px;
-            font-size: 1.1rem;
             cursor: pointer;
-            transition: background-color 0.3s, color 0.3s, transform 0.1s;
-            font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            transition: all 0.2s ease;
+            font-weight: 600;
+            letter-spacing: 0.5px;
         }
 
-        button:hover {
-            background-color: var(--button-hover);
-            transform: translateY(-1px);
-        }
-        
-        button:active {
-            transform: translateY(1px);
+        button:hover:not(:disabled) {
+            background-color: #2A2A2A;
+            border-color: #64B5F6;
+            color: #64B5F6;
         }
 
         button:disabled {
-            background-color: var(--button-disabled);
-            color: var(--button-disabled-text);
+            opacity: 0.4;
             cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
         }
 
         .progress {
-            margin-top: 15px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #AAAAAA;
-            z-index: 1;
-        }
-
-        .source-link {
-            margin-top: 40px;
-            font-size: 0.9rem;
-            color: var(--hint-color);
+            font-size: 1.1rem;
+            font-weight: 500;
+            min-width: 75px;
             text-align: center;
+            color: #64B5F6;
+        }
+
+        .hint {
+            margin-top: 20px;
+            font-size: 0.85rem;
+            color: #888;
+            letter-spacing: 0.5px;
+        }
+
+        /* 7. Stopka z linkiem do źródła */
+        .footer {
+            padding: 20px;
+            text-align: center;
+            background-color: rgba(18, 18, 18, 0.9);
+            border-top: 1px solid #2A2A2A;
             z-index: 1;
+            width: 100%;
         }
 
-        .source-link a {
-            color: var(--primary-color);
+        .footer a {
+            color: #64B5F6;
             text-decoration: none;
-            transition: color 0.3s;
+            font-size: 0.95rem;
+            transition: color 0.2s;
         }
 
-        .source-link a:hover {
-            color: var(--button-hover);
+        .footer a:hover {
+            color: #FF8A65;
             text-decoration: underline;
-        }
-
-        .card-content::-webkit-scrollbar {
-            width: 8px;
-        }
-        .card-content::-webkit-scrollbar-track {
-            background: var(--card-bg); 
-            border-radius: 4px;
-        }
-        .card-content::-webkit-scrollbar-thumb {
-            background: #555; 
-            border-radius: 4px;
-        }
-        .card-content::-webkit-scrollbar-thumb:hover {
-            background: #777; 
         }
     </style>
 </head>
@@ -261,258 +236,258 @@
 
     <canvas id="particles-canvas"></canvas>
 
-    <h1>Możesz skutecznie walczyć z negatywnymi uczuciami</h1>
-    
-    <div class="flashcard-container">
-        <div class="flashcard" id="flashcard" onclick="flipCard()">
-            <div class="flashcard-face flashcard-front" id="card-front">
+    <div class="app-container">
+        <div class="flashcard-container" id="flashcard-container">
+            <div class="flashcard" id="flashcard">
+                
+                <div class="flashcard-face flashcard-front">
+                    <div class="tag" id="card-tag-front">Tag</div>
+                    <div class="question-text" id="card-question">Pytanie ładowane z JS...</div>
                 </div>
-            <div class="flashcard-face flashcard-back" id="card-back">
+                
+                <div class="flashcard-face flashcard-back" id="card-back-face">
+                    <div class="tag" id="card-tag-back">Odpowiedź</div>
+                    <div class="answer-text" id="card-answer">Odpowiedź ładowana z JS...</div>
                 </div>
+
+            </div>
         </div>
+
+        <div class="controls">
+            <button id="btn-prev" onclick="prevCard()" disabled>&#8592; Poprzednia</button>
+            <div class="progress" id="progress-text">1 / X</div>
+            <button id="btn-next" onclick="nextCard()">Następna &#8594;</button>
+        </div>
+        
+        <div class="hint">Naciśnij SPACJĘ by odwrócić | STRZAŁKI by nawigować</div>
     </div>
 
-    <div class="controls">
-        <button id="prev-btn" onclick="prevCard()">&#8592; Poprzednia</button>
-        <button id="next-btn" onclick="nextCard()">Następna &#8594;</button>
-    </div>
-    
-    <div class="progress" id="progress">
-        Wczytywanie...
-    </div>
-
-    <div class="source-link">
-        Źródło: <a href="https://wol.jw.org/pl/wol/d/r12/lp-p/2026241" target="_blank" rel="noopener noreferrer">jw.org — Strażnica (wydanie do studium) 2026</a>
+    <div class="footer">
+        <a href="https://wol.jw.org/pl/wol/d/r12/lp-p/2026243" target="_blank" rel="noopener noreferrer">
+            Źródło: Strażnica — „Dlaczego potrzebujemy okupu” (jw.org)
+        </a>
     </div>
 
     <script>
-        const ParticlesSystem = (function() {
-            const canvas = document.getElementById('particles-canvas');
-            const ctx = canvas.getContext('2d');
-            let particlesArray = [];
-            const numberOfParticles = 80;
-            const particleColor = 'rgba(100, 181, 246, 0.15)'; 
-
-            class Particle {
-                constructor() {
-                    this.x = Math.random() * canvas.width;
-                    this.y = Math.random() * canvas.height;
-                    this.size = Math.random() * 2 + 0.5;
-                    this.speedX = Math.random() * 0.5 - 0.25;
-                    this.speedY = Math.random() * 0.5 - 0.25;
-                }
-                update() {
-                    this.x += this.speedX;
-                    this.y += this.speedY;
-
-                    if (this.x > canvas.width || this.x < 0) {
-                        this.speedX = -this.speedX;
-                    }
-                    if (this.y > canvas.height || this.y < 0) {
-                        this.speedY = -this.speedY;
-                    }
-                }
-                draw() {
-                    ctx.fillStyle = particleColor;
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            }
-
-            function init() {
-                resizeCanvas();
-                particlesArray = [];
-                for (let i = 0; i < numberOfParticles; i++) {
-                    particlesArray.push(new Particle());
-                }
-            }
-
-            function resizeCanvas() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            }
-
-            function animate() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                for (let i = 0; i < particlesArray.length; i++) {
-                    particlesArray[i].update();
-                    particlesArray[i].draw();
-                }
-                requestAnimationFrame(animate);
-            }
-
-            window.addEventListener('resize', init);
-            
-            return {
-                start: function() {
-                    init();
-                    animate();
-                }
-            };
-        })();
-
-        ParticlesSystem.start();
-
-        var cardsData = [
-            {
-                type: "Akapit 1, 2",
-                question: "Z jakimi uczuciami i z jaką walką zmagał się apostoł Paweł?",
-                answer: "Paweł był człowiekiem emocjonalnym i czasem walczył z negatywnymi uczuciami. Toczył wewnętrzną walkę: z jednej strony szczerze chciał spełniać wolę Bożą, a z drugiej odczuwał pragnienia, które pchały go w stronę grzechu."
+        // --- 1. DANE FISZEK ---
+        const cardsData = [
+            { 
+                tag: 'Akapity 1, 2', 
+                question: 'W jakim sensie jako ludzkość potrzebujemy ratunku?', 
+                answer: 'W wyniku buntu Adama cała ludzkość została uwięziona pod „gruzami” odziedziczonego grzechu. Nie potrafimy sami się z niego uwolnić, a stan ten nieuchronnie prowadzi do śmierci (Rzymian 6:23).', 
+                isSummary: false 
             },
-            {
-                type: "Akapit 4, 5",
-                question: "Jak przeszłość wpływała na emocje Pawła?",
-                answer: "Zanim Paweł został chrześcijaninem, zrobił wiele złych rzeczy, których później żałował. Dawne czyny nieraz wzbudzały w nim poczucie winy, a im dłużej był chrześcijaninem, tym bardziej mogło gryźć go sumienie."
+            { 
+                tag: 'Akapit 3', 
+                question: 'Przez co Jezus nas ratuje i z czym się to wiąże?', 
+                answer: 'Ratuje nas przez złożoną ofiarę okupu. Zapewnia nam to trzy rzeczy: przebaczenie grzechów, uzdrowienie z grzesznego stanu oraz pojednanie z naszym Stwórcą.', 
+                isSummary: false 
             },
-            {
-                type: "Akapit 6",
-                question: "Czym był ‛cierń w ciele', z którym zmagał się apostoł?",
-                answer: "Paweł zmagał się z czymś, co nazwał ‛cierniem w ciele'. Mógł to być jakiś problem fizyczny lub emocjonalny, a ten obraz słowny wskazuje, że było to coś trudnego do zniesienia."
+            { 
+                tag: 'Akapity 4, 5', 
+                question: 'Dlaczego nikt z nas nie może twierdzić, że nie potrzebuje okupu?', 
+                answer: 'Ponieważ każdy niedoskonały człowiek popełnia grzechy — czasem poważne, a czasem polegające na błędzie w mowie (Kazn. 7:20). Biblia mówi: „Jeżeli twierdzimy, że nie mamy grzechu, to oszukujemy samych siebie” (1 Jana 1:8).', 
+                isSummary: false 
             },
-            {
-                type: "Akapit 7",
-                question: "Dlaczego Pawłowi było trudno robić to, co słuszne?",
-                answer: "Paweł walczył ze swoimi słabościami. Niedoskonałe ciało osłabiało jego postanowienie robienia tego, co słuszne, a grzeszne skłonności cały czas dawały o sobie znać."
+            { 
+                tag: 'Akapity 6, 7', 
+                question: 'Co stanowi dla Jehowy podstawę do przebaczania naszych grzechów?', 
+                answer: 'Podstawą prawną jest doskonała ofiara okupu złożona przez Jezusa (wcześniej zapowiadały ją ofiary ze zwierząt). Jehowa nie przymyka oczu na grzech, lecz okup w pełni zaspokaja wymogi Jego doskonałej sprawiedliwości.', 
+                isSummary: false 
             },
-            {
-                type: "Akapit 8",
-                question: "Jakie konkretne kroki Paweł opisywał w listach, aby pokonywać słabości?",
-                answer: "Rozmyślał o tym, jak duch Boży pomaga jemu i współwyznawcom walczyć z grzesznymi skłonnościami. Zastanawiał się, co powinien poprawić, szukał rad w Słowie Bożym i podejmował konkretne działania."
+            { 
+                tag: 'Akapit 9', 
+                question: 'Co oprócz samych złych czynów obejmuje biblijne pojęcie „grzechu”?', 
+                answer: 'Obejmuje również stan, który dziedziczymy od chwili poczęcia (Ps. 51:5). Sprawia on, że nie tylko mamy skłonność do zła, ale też chorujemy, starzejemy się i w końcu umieramy.', 
+                isSummary: false 
             },
-            {
-                type: "Akapit 9, 10",
-                question: "Co było dla Pawła źródłem radości i pomagało mu walczyć z negatywnymi uczuciami?",
-                answer: "Cieszył się z dobrych wiadomości z odległych zborów i z przyjaciół. Pomagała mu też wiara w to, że okup został złożony również za niego, dzięki czemu był pewny, że Jehowa mu przebacza."
+            { 
+                tag: 'Akapit 12', 
+                question: 'Jaką realną nadzieję w kwestii uzdrowienia daje nam okup?', 
+                answer: 'Dzięki niemu w nowym świecie zostaniemy uwolnieni z „niewoli zepsucia” (Rzym. 8:21). Całkowicie i trwale znikną nasze cierpienia fizyczne, psychiczne oraz emocjonalne.', 
+                isSummary: false 
             },
-            {
-                type: "Akapit 12",
-                question: "Jak w walce z negatywnymi uczuciami pomaga nam dbanie o dobre zwyczaje duchowe?",
-                answer: "Pielęgnowanie dobrych zwyczajów duchowych pomaga skupiać się na tym, co pozytywne. Kiedy regularnie czytamy Słowo Boże, przygotowujemy się do zebrań i bierzemy w nich udział oraz angażujemy się w służbę, nabieramy duchowych sił."
+            { 
+                tag: 'Akapit 14', 
+                question: 'Jak grzech wpłynął na relację ludzi z Bogiem?', 
+                answer: 'Sprawił, że staliśmy się od Niego oddzieleni, a wręcz staliśmy się Jego wrogami. Doskonałe normy Jehowy nie pozwalają Mu tolerować grzechu, przez co powstała ogromna „wyrwa” między ludzkością a Stwórcą.', 
+                isSummary: false 
             },
-            {
-                type: "Akapit 16",
-                question: "Jak modlitwa może nam pomóc w rozpoznaniu przyczyn naszych negatywnych uczuć?",
-                answer: "Możemy z modlitwą przemyśleć, co wywołuje w nas negatywne uczucia. Tak jak król Dawid, możemy prosić Jehowę, żeby pomógł nam zrozumieć, skąd się biorą nasze negatywne myśli i jak je pokonać."
+            { 
+                tag: 'Akapit 15', 
+                question: 'W jakim sensie ofiara okupu „ułagodziła” Jehowę?', 
+                answer: 'Nie chodzi o uspokojenie emocji Boga, lecz o spełnienie wymogów Jego sprawiedliwości. Okup zbudował pomost nad „wyrwą” grzechu, otwierając nam drogę do przywrócenia bliskiej relacji i pojednania.', 
+                isSummary: false 
             },
-            {
-                type: "Akapit 17, 18",
-                question: "Jakie tematy warto przeanalizować podczas studium osobistego, żeby budować pozytywne nastawienie?",
-                answer: "Warto dostosować studium do swoich potrzeb. Można przeanalizować tematy takie jak miłosierdzie, przebaczenie i lojalna miłość Jehowy, albo przestudiować postacie biblijne, z którymi możemy się utożsamić, np. Hioba."
+            { 
+                tag: 'Akapit 18', 
+                question: 'Jaka o wiele ważniejsza kwestia niż nasze wybawienie wiąże się z okupem?', 
+                answer: 'Okup to przede wszystkim odpowiedź Jehowy na zarzuty Szatana wysunięte w Edenie. Dzięki niemu Bóg uświęca swoje imię i ostatecznie udowadnia, że jest Bogiem miłości.', 
+                isSummary: false 
             },
-            {
-                type: "Akapit 19, 20",
-                question: "Jakie powinno być nasze nastawienie do przyszłości, nawet jeśli negatywne uczucia czasem wracają?",
-                answer: "Nadal mogą zdarzać się dni, kiedy będziemy przygnębieni, jednak z pomocą Jehowy jesteśmy w stanie radzić sobie z negatywnymi uczuciami. Z Jego pomocą możemy trzymać je pod kontrolą i wyczekiwać czasu, gdy już zawsze będziemy myśleć pozytywnie."
-            },
-            {
-                type: "Podsumowanie",
-                question: "Dlaczego Paweł nieraz czuł się przygnębiony?",
-                answer: "<ul><li>Z powodu błędów popełnionych w przeszłości.</li><li>Z powodu ‛ciernia w ciele' — trudnego do zniesienia problemu fizycznego lub emocjonalnego.</li><li>Z powodu słabości i grzesznych skłonności, z którymi musiał walczyć.</li></ul>"
-            },
-            {
-                type: "Podsumowanie",
-                question: "Dzięki czemu mimo negatywnych uczuć Paweł zachowywał pozytywne nastawienie?",
-                answer: "<ul><li>Rozmyślał o działaniu ducha Bożego.</li><li>Cieszył się z dobrych wiadomości, przyjaciół i uznania Jehowy.</li><li>Pomagała mu wiara w okup i świadomość, że Jehowa przebacza mu na podstawie tej ofiary.</li></ul>"
-            },
-            {
-                type: "Podsumowanie",
-                question: "Co pomoże nam walczyć z negatywnymi uczuciami?",
-                answer: "<ul><li>Dbanie o dobre zwyczaje duchowe (czytanie Słowa Bożego, zebrania, służba).</li><li>Modlitwa o to, by zrozumieć skąd się biorą nasze negatywne myśli i jak je pokonać.</li><li>Dostosowanie studium osobistego do własnych potrzeb.</li></ul>"
+            { 
+                tag: 'Podsumowanie', 
+                question: 'Główne myśli powtórkowe:<br>Jak okup zapewnia nam...', 
+                answer: `
+                    <span>Przypomnijmy sobie kluczowe wnioski z artykułu:</span>
+                    <ul>
+                        <li><b>Przebaczenie:</b> Daje Jehowie doskonałą podstawę prawną do okazywania nam miłosierdzia bez łamania własnych, doskonałych norm sprawiedliwości.</li>
+                        <li><b>Uzdrowienie:</b> Stopniowo uwolni nas z "niewoli zepsucia", w przyszłości trwale usuwając wszelkie choroby, ból emocjonalny i śmierć odziedziczoną po Adamie.</li>
+                        <li><b>Pojednanie:</b> Zaspokaja wymogi sprawiedliwości i zasypuje "wyrwę" spowodowaną grzechem, pozwalając nam na nowo stać się przyjaciółmi, a nawet dziećmi Bożymi.</li>
+                    </ul>
+                `, 
+                isSummary: true 
             }
         ];
 
-        var currentCardIndex = 0;
-        var flashcardElement = document.getElementById('flashcard');
-        var frontElement = document.getElementById('card-front');
-        var backElement = document.getElementById('card-back');
-        var progressElement = document.getElementById('progress');
-        var prevBtn = document.getElementById('prev-btn');
-        var nextBtn = document.getElementById('next-btn');
-        
-        var flipHintHTML = '<div class="flip-hint">Kliknij, aby odwrócić ↺</div>';
-        var flashTimeout = null;
+        let currentIndex = 0;
+        let isFlipped = false;
 
-        function updateCard() {
-            flashcardElement.classList.remove('reveal-flash');
-            if(flashTimeout) clearTimeout(flashTimeout);
+        const flashcard = document.getElementById('flashcard');
+        const cardTagFront = document.getElementById('card-tag-front');
+        const cardTagBack = document.getElementById('card-tag-back');
+        const cardQuestion = document.getElementById('card-question');
+        const cardAnswer = document.getElementById('card-answer');
+        const cardBackFace = document.getElementById('card-back-face');
+        const progressText = document.getElementById('progress-text');
+        const btnPrev = document.getElementById('btn-prev');
+        const btnNext = document.getElementById('btn-next');
 
-            flashcardElement.classList.remove('is-flipped');
+        // --- 2. LOGIKA KARTY ---
+        function loadCard(index) {
+            const data = cardsData[index];
             
-            setTimeout(function() {
-                var cardData = cardsData[currentCardIndex];
-                var isSummary = cardData.type === "Podsumowanie";
-                
-                if(isSummary) {
-                    frontElement.classList.add('summary-card');
-                    backElement.classList.add('summary-card');
-                } else {
-                    frontElement.classList.remove('summary-card');
-                    backElement.classList.remove('summary-card');
-                }
+            // Front
+            cardTagFront.textContent = data.tag;
+            cardQuestion.innerHTML = data.question;
+            
+            // Rewers
+            cardTagBack.textContent = data.isSummary ? 'Wnioski' : 'Odpowiedź';
+            cardAnswer.innerHTML = data.answer;
 
-                frontElement.innerHTML = 
-                    '<span class="tag">' + cardData.type + '</span>' +
-                    '<div class="card-content">' + cardData.question + '</div>' +
-                    flipHintHTML;
-                
-                backElement.innerHTML = 
-                    '<div class="card-content">' + cardData.answer + '</div>' +
-                    flipHintHTML;
-                
-                progressElement.innerText = 'Karta ' + (currentCardIndex + 1) + ' z ' + cardsData.length;
-                
-                prevBtn.disabled = currentCardIndex === 0;
-                nextBtn.disabled = currentCardIndex === (cardsData.length - 1);
-            }, 150); 
-        }
+            // Logika wyjątku: Karta podsumowująca mniejsza czcionka i flex-start
+            if (data.isSummary) {
+                cardBackFace.classList.add('summary-mode');
+            } else {
+                cardBackFace.classList.remove('summary-mode');
+            }
 
-        function flipCard() {
-            flashcardElement.classList.remove('reveal-flash');
-            if(flashTimeout) clearTimeout(flashTimeout);
-
-            flashcardElement.classList.toggle('is-flipped');
-
-            if(flashcardElement.classList.contains('is-flipped')) {
-                flashTimeout = setTimeout(function() {
-                    flashcardElement.classList.add('reveal-flash');
-                    setTimeout(function() {
-                         flashcardElement.classList.remove('reveal-flash');
-                    }, 500);
-                }, 600); 
+            // Aktualizacja UI
+            progressText.textContent = `${index + 1} / ${cardsData.length}`;
+            btnPrev.disabled = index === 0;
+            btnNext.disabled = index === cardsData.length - 1;
+            
+            // Reset obrotu
+            if (isFlipped) {
+                flashcard.classList.remove('flipped');
+                isFlipped = false;
             }
         }
 
+        function flipCard() {
+            isFlipped = !isFlipped;
+            flashcard.classList.toggle('flipped');
+        }
+
         function nextCard() {
-            if (currentCardIndex < cardsData.length - 1) {
-                currentCardIndex++;
-                updateCard();
+            if (currentIndex < cardsData.length - 1) {
+                currentIndex++;
+                loadCard(currentIndex);
             }
         }
 
         function prevCard() {
-            if (currentCardIndex > 0) {
-                currentCardIndex--;
-                updateCard();
+            if (currentIndex > 0) {
+                currentIndex--;
+                loadCard(currentIndex);
             }
         }
 
-        document.addEventListener('keydown', function(event) {
-            if(event.key === 'ArrowRight' || event.key === ' ') {
-                if(!flashcardElement.classList.contains('is-flipped') && event.key === ' ') {
-                    flipCard();
-                } else if(currentCardIndex < cardsData.length - 1) {
-                    nextCard();
-                }
-                if(event.key === ' ') event.preventDefault();
-            } else if(event.key === 'ArrowLeft') {
-                prevCard();
-            } else if(event.key === 'Enter') {
-                flipCard();
+        // --- 3. EFEKT ROZBŁYSKU ---
+        flashcard.addEventListener('transitionend', (e) => {
+            if (e.propertyName === 'transform' && isFlipped) {
+                flashcard.classList.remove('flash-effect-fade');
+                flashcard.classList.add('flash-effect');
+                
+                setTimeout(() => {
+                    flashcard.classList.remove('flash-effect');
+                    flashcard.classList.add('flash-effect-fade');
+                }, 150);
             }
         });
 
-        updateCard();
+        // --- 4. STEROWANIE ---
+        flashcard.addEventListener('click', flipCard);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' || e.code === 'Enter') {
+                e.preventDefault(); 
+                flipCard();
+            } else if (e.code === 'ArrowRight') {
+                nextCard();
+            } else if (e.code === 'ArrowLeft') {
+                prevCard();
+            }
+        });
+
+        // --- 5. CZĄSTECZKI W TLE (CANVAS) ---
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        let particlesArray = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = Math.random() * 0.8 - 0.4;
+                this.speedY = Math.random() * 0.8 - 0.4;
+                this.opacity = Math.random() * 0.5 + 0.1;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+            draw() {
+                ctx.fillStyle = `rgba(100, 181, 246, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particlesArray = [];
+            let numberOfParticles = (canvas.width * canvas.height) / 9000;
+            for (let i = 0; i < numberOfParticles; i++) {
+                particlesArray.push(new Particle());
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
+            }
+            requestAnimationFrame(animateParticles);
+        }
+
+        // --- INICJALIZACJA ---
+        initParticles();
+        animateParticles();
+        loadCard(currentIndex);
+
     </script>
 </body>
 </html>
