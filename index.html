@@ -1,666 +1,108 @@
+
 <!DOCTYPE html>
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biblijny Teleturniej - Imię Boga w literaturze polskiej</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Milicz-Północ</title>
     <style>
-        :root {
-            --bg-color: #121212;
-            --card-bg: #1E1E1E;
-            --text-color: #E0E0E0;
-            --accent-color: #64B5F6;
-            --tag-color: #FF8A65;
-            --done-color: #333333;
+        /* Styl ogólny - identyczny jak w porzadkowi.html */
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background-color: #121212;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            overflow: hidden;
         }
 
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
+        /* Kontener centrujący (odpowiednik #login-overlay) */
+        .main-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
             flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            overflow-x: hidden;
         }
 
-        header {
+        /* Pudełko menu (odpowiednik .login-box) */
+        .menu-box {
+            background: #1e1e1e; 
+            padding: 30px 25px; 
+            border-radius: 16px;
+            border: 1px solid #333; 
+            width: 85%; max-width: 320px;
             text-align: center;
-            margin-top: 30px;
-            margin-bottom: 20px;
-            z-index: 1;
-            position: relative;
+            box-shadow: 0 4px 20px rgba(0, 223, 196, 0.15);
         }
 
+        /* Nagłówek */
         h1 {
-            color: var(--accent-color);
-            margin: 0 0 10px 0;
-            font-size: 2.2rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+            color: #00dfc4; 
+            margin: 0 0 10px 0; 
+            text-transform: uppercase; 
+            font-size: 1.4rem;
         }
 
-        .instructions {
-            color: #888;
-            font-size: 0.9rem;
-            margin-bottom: 15px;
-        }
-
-        /* Przycisk Zasad Gry */
-        .rules-btn {
-            background-color: transparent;
-            color: var(--tag-color);
-            border: 1px solid var(--tag-color);
-            padding: 8px 20px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 15px;
-        }
-
-        .rules-btn:hover {
-            background-color: var(--tag-color);
-            color: #000;
-        }
-
-        /* Tło cząsteczkowe */
-        canvas#particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        /* LICZNIK PUNKTÓW */
-        .scoreboard {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 30px;
-            z-index: 1;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .team-card {
-            background-color: var(--card-bg);
-            border: 2px solid var(--accent-color);
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-            min-width: 180px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-        }
-
-        .team-name {
-            font-weight: bold;
-            color: var(--tag-color);
-            margin-bottom: 10px;
-            font-size: 1.2rem;
-            background: transparent;
-            border: none;
-            border-bottom: 1px dashed var(--tag-color);
-            text-align: center;
-            width: 100%;
-            padding-bottom: 5px;
-            font-family: inherit;
+        p {
+            color: #aaa; 
+            font-size: 0.9rem; 
+            margin-bottom: 25px;
         }
         
-        .team-name:focus {
-            outline: none;
-            border-bottom: 1px solid var(--accent-color);
-            color: var(--accent-color);
-        }
-
-        .team-score {
-            font-size: 2.5rem;
-            color: var(--text-color);
-            margin-bottom: 15px;
-            font-weight: bold;
-        }
-
-        .score-btns {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .score-btn {
-            padding: 5px 15px;
-            font-size: 1.2rem;
-            border-radius: 5px;
-            border: 1px solid;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-weight: bold;
-        }
-
-        .btn-add {
-            background-color: rgba(100, 181, 246, 0.1);
-            color: var(--accent-color);
-            border-color: var(--accent-color);
-        }
-
-        .btn-add:hover {
-            background-color: var(--accent-color);
-            color: #000;
-        }
-
-        .btn-sub {
-            background-color: rgba(255, 138, 101, 0.1);
-            color: var(--tag-color);
-            border-color: var(--tag-color);
-        }
-
-        .btn-sub:hover {
-            background-color: var(--tag-color);
-            color: #000;
-        }
-
-        /* PLANSZA GRY */
-        .game-board {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            width: 90%;
-            max-width: 1000px;
-            z-index: 1;
-            margin-bottom: 40px;
-        }
-
-        .category-header {
-            background-color: var(--card-bg);
-            color: var(--tag-color);
-            text-align: center;
-            padding: 15px;
-            font-weight: bold;
-            font-size: 1.1rem;
-            border-bottom: 3px solid var(--accent-color);
-            text-transform: uppercase;
-        }
-
-        .score-card {
-            background-color: var(--card-bg);
-            color: var(--accent-color);
-            text-align: center;
-            padding: 30px 15px;
-            font-size: 1.8rem;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 8px;
-            border: 1px solid #333;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-        }
-
-        .score-card:hover:not(.done) {
-            transform: scale(1.05);
-            background-color: #2a2a2a;
-            box-shadow: 0 0 15px rgba(100, 181, 246, 0.4);
-        }
-
-        .score-card.done {
-            background-color: var(--done-color);
-            color: #555;
-            cursor: default;
-            text-decoration: line-through;
-            box-shadow: none;
-        }
-
-        /* WSPÓLNE STYLE DLA MODALI */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(0, 0, 0, 0.95);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .modal-content {
-            background-color: var(--card-bg);
-            border: 2px solid var(--accent-color);
-            border-radius: 15px;
-            width: 90%;
-            max-width: 800px;
-            min-height: 400px;
-            padding: 40px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            box-shadow: 0 0 40px rgba(100, 181, 246, 0.2);
-            position: relative;
-        }
-
-        /* MODAL PYTANIA */
-        .modal-category {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            color: var(--tag-color);
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .modal-points-display {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            color: var(--accent-color);
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-
-        .modal-question {
-            font-size: 1.8rem;
-            margin-bottom: 30px;
-            line-height: 1.4;
-        }
-
-        .modal-answer {
-            font-size: 1.5rem;
-            color: var(--accent-color);
-            display: none;
-            margin-bottom: 30px;
-            line-height: 1.4;
-        }
-
-        .modal-answer.visible {
+        /* Linki wyglądające jak przyciski */
+        a.btn-link {
             display: block;
-            animation: fadeIn 0.5s ease;
+            width: 100%; 
+            padding: 14px; 
+            margin-bottom: 15px; 
+            border-radius: 8px;
+            background: #00dfc4; 
+            color: #000; 
+            font-weight: bold; 
+            font-size: 16px;
+            text-decoration: none; /* Usunięcie podkreślenia */
+            box-sizing: border-box;
+            transition: 0.2s;
+            border: none;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* MODAL ZASAD GRY */
-        .rules-content {
-            text-align: left;
-            align-items: flex-start;
-            justify-content: flex-start;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .rules-content h2 {
-            color: var(--accent-color);
-            margin-top: 0;
-            width: 100%;
-            text-align: center;
-            border-bottom: 1px solid #333;
-            padding-bottom: 15px;
-        }
-
-        .rules-content h3 {
-            color: var(--tag-color);
-            margin-bottom: 5px;
-        }
-
-        .rules-content p, .rules-content li {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            color: #ccc;
-        }
-
-        .rules-content ul {
-            margin-top: 5px;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 20px;
-            margin-top: 20px;
-            width: 100%;
-            justify-content: center;
-        }
-
-        .action-btn {
-            background-color: transparent;
-            color: var(--text-color);
-            border: 1px solid var(--accent-color);
-            padding: 12px 25px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .action-btn:hover {
-            background-color: var(--accent-color);
-            color: #000;
-        }
-
-        .close-btn {
-            border-color: #ff5252;
-            color: #ff5252;
-        }
-
-        .close-btn:hover {
-            background-color: #ff5252;
-            color: #fff;
-        }
-
-        .source-link {
-            color: var(--accent-color);
-            text-decoration: none;
-            font-size: 0.9rem;
-            opacity: 0.8;
-            margin-bottom: 20px;
-            z-index: 1;
+        /* Efekt kliknięcia */
+        a.btn-link:active { 
+            opacity: 0.8; 
+            transform: scale(0.98); 
         }
         
-        .source-link:hover {
-            text-decoration: underline;
-            opacity: 1;
+        /* Ostatni przycisk bez marginesu dolnego */
+        a.btn-link:last-child {
+            margin-bottom: 0;
         }
+
     </style>
 </head>
 <body>
 
-    <canvas id="particles"></canvas>
+    <div class="main-container">
+        <div class="menu-box">
+            <h1>Milicz-Północ</h1>
+            <p>Miłej zabawy</p>
+<!--- <a href="https://miliczpolnoc.github.io/zbiorki.html" class="btn-link">
+    ZBIÓRKI
+</a>
+           <a href="https://miliczpolnoc.github.io/szkola.html" class="btn-link">
+    ULEPSZAJMY SWĄ SŁUŻBĘ
+</a>
+           <a href="https://miliczpolnoc.github.io/wozki.html" class="btn-link">
+      WÓZKI
+</a>
+          <!--- <a href="https://miliczpolnoc.github.io/porzadkowi.html" class="btn-link">
+                PORZĄDKOWI
+            </a> --->
 
-    <header>
-        <h1>Biblijny Teleturniej</h1>
-        <button class="rules-btn" id="openRulesBtn">📖 Zasady Gry</button>
-        <div class="instructions">Zmień nazwy drużyn klikając w nie. Wybierz pole na planszy, aby rozpocząć!</div>
-    </header>
-
-    <div class="scoreboard" id="scoreboard">
-        </div>
-
-    <div class="game-board" id="gameBoard">
-        </div>
-
-    <a href="http://jehowa.102.pl/" target="_blank" class="source-link">Źródło: Imię Boga w literaturze polskiej do końca XX wieku</a>
-
-    <div class="modal-overlay" id="rulesModal">
-        <div class="modal-content rules-content">
-            <h2>📜 Zasady Gry</h2>
-            
-            <h3>Cel zabawy</h3>
-            <p>Sprawdzenie wiedzy na temat występowania imienia Bożego (Jehowa) w literaturze polskiej oraz zdobycie jak największej liczby punktów.</p>
-
-            <h3>Przebieg gry</h3>
-            <ul>
-                <li>Podzielcie się na maksymalnie 3 drużyny. Zmieńcie nazwy drużyn na tablicy wyników, klikając w domyślny tekst.</li>
-                <li>Drużyny grają turowo. W swojej kolejce drużyna wybiera kategorię i wartość punktową (np. "Romantyzm za 300").</li>
-                <li>Prowadzący odsłania pytanie, a drużyna ma czas na naradę (np. 30 sekund).</li>
-                <li>Jeżeli drużyna odpowie poprawnie, prowadzący klika przycisk <b>"+ Dodaj"</b> w panelu drużyny.</li>
-                <li>Jeżeli odpowiedź jest błędna, drużyna traci punkty (przycisk <b>"- Odejmij"</b>), a szansę na odpowiedź może przejąć drużyna przeciwna!</li>
-            </ul>
-
-            <h3>Zasady dodatkowe</h3>
-            <ul>
-                <li>Kliknięcie przycisków punktacji w momencie otwarcia pytania automatycznie przelicza jego dokładną wartość (np. dodaje 300 pkt). Kliknięcie przycisków, gdy plansza główna jest widoczna, dodaje/odejmuje standardowe 100 pkt.</li>
-                <li>Odpowiedzi na pytania o charakterze biblijnym należy opierać na <b>Przekładzie Nowego Świata</b> oraz materiałach z serwisu <b>jw.org</b>.</li>
-                <li>Wygrywa drużyna, która po odsłonięciu całej planszy zgromadzi najwięcej punktów!</li>
-            </ul>
-
-            <div class="btn-group">
-                <button class="action-btn close-btn" id="closeRulesBtn">Zrozumiałem, gramy!</button>
-            </div>
+                       <a href="https://miliczpolnoc.github.io/fiszki.html" class="btn-link">
+                FISZKI NA STUDIUM BIBLII
+            </a>
+            <a href="https://miliczpolnoc.github.io/teleturniej.html" class="btn-link">
+                BIBLIJNY TELETURNIEJ
+            </a>
         </div>
     </div>
 
-    <div class="modal-overlay" id="modal">
-        <div class="modal-content">
-            <div class="modal-category" id="modalCategory">Kategoria</div>
-            <div class="modal-points-display" id="modalPointsDisplay">100</div>
-            <div class="modal-question" id="modalQuestion">Treść pytania...</div>
-            <div class="modal-answer" id="modalAnswer">Odpowiedź...</div>
-            
-            <div class="btn-group">
-                <button class="action-btn" id="showAnswerBtn">Pokaż odpowiedź</button>
-                <button class="action-btn close-btn" id="closeBtn">Zamknij (zaliczone)</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // STAN GRY DLA DRUŻYN
-        const teams = [
-            { id: 1, name: "Drużyna 1", score: 0 },
-            { id: 2, name: "Drużyna 2", score: 0 },
-            { id: 3, name: "Drużyna 3", score: 0 }
-        ];
-
-        let currentQuestionValue = 0;
-
-        // DANE PYTAŃ
-        const categories = ["Przekłady Biblii", "Romantyzm", "Powieści i Nowele", "Poezja i Różne"];
-        
-        const questions = [
-            // Kategoria 1: Przekłady Biblii
-            { cat: 0, points: 100, q: "Zgodnie z serwisem jw.org i Przekładem Nowego Świata (wersja do studium), jak konsekwentnie w Pismach Hebrajskich oddano tetragram (יהוה)?", a: "Oddano go jako imię 'Jehowa' (ponad 7000 razy), przywracając mu należne miejsce zgodnie z najstarszymi manuskryptami." },
-            { cat: 0, points: 200, q: "Który działacz reformacji i tłumacz wydał w 1572 r. Biblię Nieświeską, używając w niej imienia Jehowa?", a: "Szymon Budny." },
-            { cat: 0, points: 300, q: "Jakie było oficjalne stanowisko Jakuba Wujka wobec imienia Jehowa w jego przekładzie z 1599 roku?", a: "Uważał, że to wymysł heretyków i wszędzie zastępował je słowem 'Pan' (Adonai)." },
-            { cat: 0, points: 400, q: "W której księdze Biblii Brzeskiej (1563 r.), współtłumaczonej przez Grzegorza Orszaka, pojawia się forma 'Jehowah'?", a: "W 2 Księdze Mojżeszowej (Księdze Wyjścia)." },
-
-            // Kategoria 2: Romantyzm
-            { cat: 1, points: 100, q: "Jakiej skróconej formy imienia Bożego użył Jan Kochanowski w Psałterzu Dawidów (np. 'Zakon Twój miłuję, Ty też umiłuj mię...')?", a: "Użył formy 'Jowa'." },
-            { cat: 1, points: 200, q: "W którym dramacie Juliusza Słowackiego Archanioł kładzie serce 'przed tronem Jehowy'?", a: "W dramacie 'Kordian'." },
-            { cat: 1, points: 300, q: "Z jakiego wczesnego poematu (1819 r.) Adama Mickiewicza pochodzą słowa: 'Tymczasem ów, tworzący jedną mocą słowa (...) Jehowa'?", a: "Z poematu 'Kartofla'." },
-            { cat: 1, points: 400, q: "W utworze 'Nie-Boska komedia' Zygmunta Krasińskiego chór przechrztów śpiewa: 'Kto jest pan nasz, a nikt inny?'. Jakie imię pada w odpowiedzi?", a: "Jehowa." },
-
-            // Kategoria 3: Powieści i Nowele
-            { cat: 2, points: 100, q: "W jakiej słynnej powieści historycznej Bolesława Prusa występuje Żydówka Sara modląca się do Jehowy?", a: "W powieści 'Faraon'." },
-            { cat: 2, points: 200, q: "Która bohaterka 'Quo vadis' Henryka Sienkiewicza rzekomo radziła się hebrajskich kapłanów i wyznawała wiarę w Jehowę?", a: "Poppea Sabina (żona Nerona)." },
-            { cat: 2, points: 300, q: "W jakiej powieści Elizy Orzeszkowej znajduje się fragment o rzece Sabation i kulcie Jehowy?", a: "W powieści 'Meir Ezofowicz'." },
-            { cat: 2, points: 400, q: "W jakiej autobiografii Władysława Szpilmana z okresu II wojny światowej pojawia się wzmianka o 'Jehowie w całej swojej wspaniałości'?", a: "W książce 'Pianista'." },
-
-            // Kategoria 4: Poezja i Różne
-            { cat: 3, points: 100, q: "Jaka znana autorka nowel napisała wiersz 'Mojżesz', w którym pojawiają się słowa: 'Idziesz... Jehowa!...'?", a: "Maria Konopnicka." },
-            { cat: 3, points: 200, q: "Kogo - według wiersza 'Ulica szarlatanów' K. I. Gałczyńskiego - przeklinają szarlatani?", a: "Jezu-Chrysta i Jehowę." },
-            { cat: 3, points: 300, q: "Jaki przyszły papież napisał w 1940 r. dramaty 'Hiob' oraz 'Jeremiasz', w których wielokrotnie pada imię Jehowa?", a: "Karol Wojtyła (Jan Paweł II)." },
-            { cat: 3, points: 400, q: "Jaki polski poeta napisał w 'Traktacie poetyckim': 'Valeat numen triplex Jehovae!'?", a: "Czesław Miłosz." }
-        ];
-
-        // INICJALIZACJA LICZNIKA PUNKTÓW
-        const scoreboardElement = document.getElementById('scoreboard');
-
-        function renderScoreboard() {
-            scoreboardElement.innerHTML = '';
-            teams.forEach(team => {
-                const teamCard = document.createElement('div');
-                teamCard.className = 'team-card';
-                
-                teamCard.innerHTML = `
-                    <input type="text" class="team-name" value="${team.name}" onchange="updateTeamName(${team.id}, this.value)">
-                    <div class="team-score" id="score-${team.id}">${team.score}</div>
-                    <div class="score-btns">
-                        <button class="score-btn btn-add" onclick="updateScore(${team.id}, true)">+ Dodaj</button>
-                        <button class="score-btn btn-sub" onclick="updateScore(${team.id}, false)">- Odejmij</button>
-                    </div>
-                `;
-                scoreboardElement.appendChild(teamCard);
-            });
-        }
-
-        function updateTeamName(id, newName) {
-            const team = teams.find(t => t.id === id);
-            if(team) team.name = newName;
-        }
-
-        function updateScore(id, isAdding) {
-            const team = teams.find(t => t.id === id);
-            if(team) {
-                // Jeśli jest otwarte pytanie, dodaj/odejmij jego wartość, inaczej użyj domyślnego skoku 100 pkt
-                const pointsToChange = currentQuestionValue > 0 ? currentQuestionValue : 100;
-                
-                if(isAdding) {
-                    team.score += pointsToChange;
-                } else {
-                    team.score -= pointsToChange;
-                }
-                document.getElementById(`score-${id}`).textContent = team.score;
-            }
-        }
-
-        // ZASADY GRY - MODAL
-        const rulesModal = document.getElementById('rulesModal');
-        const openRulesBtn = document.getElementById('openRulesBtn');
-        const closeRulesBtn = document.getElementById('closeRulesBtn');
-
-        openRulesBtn.addEventListener('click', () => {
-            rulesModal.classList.add('active');
-        });
-
-        closeRulesBtn.addEventListener('click', () => {
-            rulesModal.classList.remove('active');
-        });
-
-        // INICJALIZACJA PLANSZY GRY
-        const gameBoard = document.getElementById('gameBoard');
-        const modal = document.getElementById('modal');
-        const modalCategory = document.getElementById('modalCategory');
-        const modalPointsDisplay = document.getElementById('modalPointsDisplay');
-        const modalQuestion = document.getElementById('modalQuestion');
-        const modalAnswer = document.getElementById('modalAnswer');
-        const showAnswerBtn = document.getElementById('showAnswerBtn');
-        const closeBtn = document.getElementById('closeBtn');
-
-        let currentCardElement = null;
-
-        function initBoard() {
-            categories.forEach(cat => {
-                const header = document.createElement('div');
-                header.className = 'category-header';
-                header.textContent = cat;
-                gameBoard.appendChild(header);
-            });
-
-            const pointsArr = [100, 200, 300, 400];
-            
-            pointsArr.forEach(pts => {
-                categories.forEach((_, catIndex) => {
-                    const qData = questions.find(q => q.cat === catIndex && q.points === pts);
-                    const card = document.createElement('div');
-                    card.className = 'score-card';
-                    card.textContent = pts;
-                    
-                    if(qData) {
-                        card.addEventListener('click', () => openQuestion(card, qData, categories[catIndex]));
-                    } else {
-                        card.classList.add('done');
-                    }
-                    
-                    gameBoard.appendChild(card);
-                });
-            });
-        }
-
-        function openQuestion(cardElem, qData, categoryName) {
-            if (cardElem.classList.contains('done')) return;
-            
-            currentCardElement = cardElem;
-            currentQuestionValue = qData.points;
-            
-            modalCategory.textContent = categoryName;
-            modalPointsDisplay.textContent = qData.points;
-            modalQuestion.textContent = qData.q;
-            modalAnswer.textContent = qData.a;
-            
-            modalAnswer.classList.remove('visible');
-            showAnswerBtn.style.display = 'block';
-            
-            modal.classList.add('active');
-        }
-
-        showAnswerBtn.addEventListener('click', () => {
-            modalAnswer.classList.add('visible');
-            showAnswerBtn.style.display = 'none';
-        });
-
-        closeBtn.addEventListener('click', () => {
-            modal.classList.remove('active');
-            currentQuestionValue = 0; 
-            if (currentCardElement) {
-                currentCardElement.classList.add('done');
-            }
-        });
-
-        // EFEKTY TŁA (CZĄSTECZKI)
-        const canvas = document.getElementById('particles');
-        const ctx = canvas.getContext('2d');
-        let width, height;
-        let particlesArray = [];
-
-        function resizeCanvas() {
-            width = window.innerWidth;
-            height = window.innerHeight;
-            canvas.width = width;
-            canvas.height = height;
-        }
-
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        class Particle {
-            constructor() {
-                this.x = Math.random() * width;
-                this.y = Math.random() * height;
-                this.size = Math.random() * 2 + 0.5;
-                this.speedX = Math.random() * 1 - 0.5;
-                this.speedY = Math.random() * 1 - 0.5;
-            }
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                if (this.x < 0 || this.x > width) this.speedX *= -1;
-                if (this.y < 0 || this.y > height) this.speedY *= -1;
-            }
-            draw() {
-                ctx.fillStyle = 'rgba(100, 181, 246, 0.3)';
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        function initParticles() {
-            particlesArray = [];
-            let numberOfParticles = (width * height) / 9000;
-            for (let i = 0; i < numberOfParticles; i++) {
-                particlesArray.push(new Particle());
-            }
-        }
-
-        function animateParticles() {
-            ctx.clearRect(0, 0, width, height);
-            for (let i = 0; i < particlesArray.length; i++) {
-                particlesArray[i].update();
-                particlesArray[i].draw();
-            }
-            requestAnimationFrame(animateParticles);
-        }
-
-        initParticles();
-        animateParticles();
-        renderScoreboard();
-        initBoard();
-
-    </script>
 </body>
 </html>
