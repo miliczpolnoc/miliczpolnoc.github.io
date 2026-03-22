@@ -27,15 +27,16 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            overflow: hidden;
+            /* Zmiany dla mobile: pozwalamy na scrollowanie w pionie i używamy dvh */
+            min-height: 100dvh;
+            overflow-x: hidden;
+            overflow-y: auto; 
             position: relative;
         }
 
-        /* Tło cząsteczkowe */
+        /* Tło cząsteczkowe - zmienione na fixed, aby nie znikało przy scrollowaniu */
         #particles-canvas {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
@@ -49,10 +50,12 @@
             z-index: 1;
             width: 100%;
             max-width: 800px;
-            padding: 20px;
+            min-height: 100dvh;
+            padding: 40px 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
         }
 
         header {
@@ -154,6 +157,7 @@
             justify-content: center;
             gap: 20px;
             margin-bottom: 20px;
+            flex-wrap: wrap; /* Zabezpieczenie dla bardzo wąskich ekranów */
         }
 
         button {
@@ -195,7 +199,7 @@
 
         /* Stopka */
         footer {
-            margin-top: auto;
+            margin-top: 20px;
             text-align: center;
         }
 
@@ -213,6 +217,9 @@
         }
 
         @media (max-width: 600px) {
+            .app-container {
+                padding: 20px 15px 40px 15px; /* Więcej miejsca na dole */
+            }
             .flashcard-container {
                 height: 450px;
             }
@@ -265,7 +272,6 @@
     </div>
 
     <script>
-        // Dane fiszek przygotowane na podstawie dostarczonego artykułu
         const cardsData = [
             {
                 front: "1, 2. Dlaczego potrzebujemy ratunku? (Rzymian 7:22-24).",
@@ -371,13 +377,11 @@
         const prevBtn = document.getElementById('prev-btn');
         const nextBtn = document.getElementById('next-btn');
 
-        // Renderowanie zawartości karty
         function updateCard() {
             const cardData = cardsData[currentIndex];
             frontText.textContent = cardData.front;
             backText.textContent = cardData.back;
             
-            // Formatowanie kart podsumowujących (mniejsza czcionka, inny układ)
             if (cardData.isSummary) {
                 backFace.classList.add('summary-mode');
             } else {
@@ -387,16 +391,14 @@
             counterDisplay.textContent = `${currentIndex + 1} / ${cardsData.length}`;
         }
 
-        // Odwracanie karty
         function toggleCard() {
             isFlipped = !isFlipped;
             flashcard.classList.toggle('flipped');
             if (!isFlipped) {
-                flashcard.classList.remove('glow'); // Usuwamy rozbłysk podczas powrotu
+                flashcard.classList.remove('glow');
             }
         }
 
-        // Dodanie poświaty dokładnie na koniec animacji odwracania
         flashcard.addEventListener('transitionend', (e) => {
             if (e.propertyName === 'transform' && isFlipped) {
                 flashcard.classList.add('glow');
@@ -406,7 +408,6 @@
         function changeCard(direction) {
             if (isFlipped) {
                 toggleCard();
-                // Oczekujemy na zakończenie animacji powrotu przed zmianą treści
                 setTimeout(() => updateIndex(direction), 300);
             } else {
                 updateIndex(direction);
@@ -422,7 +423,6 @@
             updateCard();
         }
 
-        // --- Obsługa zdarzeń (Mysz + Klawiatura) ---
         container.addEventListener('click', toggleCard);
         nextBtn.addEventListener('click', () => changeCard('next'));
         prevBtn.addEventListener('click', () => changeCard('prev'));
@@ -433,15 +433,13 @@
             } else if (e.key === 'ArrowLeft') {
                 changeCard('prev');
             } else if (e.key === ' ' || e.key === 'Enter') {
-                e.preventDefault(); // Zapobiega przewijaniu strony spacją
+                e.preventDefault();
                 toggleCard();
             }
         });
 
-        // Inicjalizacja pierwszej karty
         updateCard();
 
-        // --- System Cząsteczek (Particles) w tle ---
         const canvas = document.getElementById('particles-canvas');
         const ctx = canvas.getContext('2d');
         let particlesArray = [];
@@ -460,14 +458,12 @@
                 this.size = Math.random() * 2 + 0.5;
                 this.speedX = (Math.random() - 0.5) * 0.5;
                 this.speedY = (Math.random() - 0.5) * 0.5;
-                // Cząsteczki w kolorze akcentu z delikatną przezroczystością
                 this.color = 'rgba(100, 181, 246, ' + (Math.random() * 0.3 + 0.1) + ')';
             }
             update() {
                 this.x += this.speedX;
                 this.y += this.speedY;
 
-                // Odbijanie od krawędzi ekranu
                 if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
                 if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
             }
