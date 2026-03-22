@@ -27,14 +27,12 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            /* Zmiany dla mobile: pozwalamy na scrollowanie w pionie i używamy dvh */
             min-height: 100dvh;
             overflow-x: hidden;
             overflow-y: auto; 
             position: relative;
         }
 
-        /* Tło cząsteczkowe - zmienione na fixed, aby nie znikało przy scrollowaniu */
         #particles-canvas {
             position: fixed;
             top: 0;
@@ -157,7 +155,8 @@
             justify-content: center;
             gap: 20px;
             margin-bottom: 20px;
-            flex-wrap: wrap; /* Zabezpieczenie dla bardzo wąskich ekranów */
+            flex-wrap: nowrap; /* Wymuszona jedna linia */
+            width: 100%;
         }
 
         button {
@@ -170,6 +169,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
+            white-space: nowrap; /* Zapobiega łamaniu tekstu w przycisku */
         }
 
         button:hover {
@@ -187,6 +187,7 @@
             color: var(--tag-color);
             min-width: 60px;
             text-align: center;
+            white-space: nowrap;
         }
 
         /* Instrukcja */
@@ -216,9 +217,10 @@
             text-decoration: underline;
         }
 
+        /* Responsywność dla smartfonów */
         @media (max-width: 600px) {
             .app-container {
-                padding: 20px 15px 40px 15px; /* Więcej miejsca na dole */
+                padding: 20px 10px 40px 10px; 
             }
             .flashcard-container {
                 height: 450px;
@@ -230,7 +232,19 @@
                 font-size: 1.2rem;
             }
             .card-face.back {
-                font-size: 1.2rem;
+                font-size: 1.1rem;
+            }
+            /* Dopasowanie przycisków do jednej linii na wąskich ekranach */
+            .controls {
+                gap: 10px; 
+            }
+            button {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+            }
+            #counter {
+                font-size: 1rem;
+                min-width: 45px;
             }
         }
     </style>
